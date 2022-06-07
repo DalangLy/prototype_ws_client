@@ -17,16 +17,23 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<FormState> _clientNameFormKey = GlobalKey<FormState>();
 
   final port = 8000;
-  late final Stream<NetworkAddress> stream = NetworkAnalyzer.discover2(
-    '192.168.0', port,
-  );
-
+  late Stream<NetworkAddress> stream;
   final List<NetworkAddress> ff = [];
 
   @override
   initState(){
     super.initState();
 
+
+    _scanNetwork();
+
+  }
+
+
+  void _scanNetwork(){
+    stream = NetworkAnalyzer.discover2(
+      '192.168.0', port,
+    );
 
     int found = 0;
     stream.listen((NetworkAddress addr) {
@@ -36,8 +43,16 @@ class _HomePageState extends State<HomePage> {
         setState(() {});
         print('Found device: ${addr.ip}:$port');
       }
-    }).onDone(() => print('Finish. Found $found device(s)'));
+    },onError: (ex){
+      print('on error');
+    },
+      onDone: (){
+        print('On Done');
+      },
+      cancelOnError: false,
+    ).onDone(() => print('Finish. Found $found device(s)'));
   }
+
 
   int _selectIndex = 0;
   late NetworkAddress _selectedNetworkAddress = ff[_selectIndex];
@@ -78,24 +93,46 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const Divider(color: Colors.transparent,),
-                  SizedBox(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Servers List', style: Theme.of(context).textTheme.headline6,),
+                      IconButton(onPressed: (){
+                        ff.clear();
+
+                        _scanNetwork();
+
+                      }, icon: const Icon(Icons.refresh)),
+                    ],
+                  ),
+                  Container(
                     height: 300,
-                    child: ListView.builder(
-                      itemCount: ff.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          selectedColor: Colors.white,
-                          selectedTileColor: Colors.blue,
-                          selected: index == _selectIndex,
-                          title: Text(ff[index].ip),
-                          onTap: (){
-                            setState((){
-                              _selectIndex = index;
-                              _selectedNetworkAddress = ff[index];
-                            });
-                          },
-                        );
-                      },
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListView.builder(
+                        itemCount: ff.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            selectedColor: Colors.white,
+                            selectedTileColor: Colors.blue,
+                            selected: index == _selectIndex,
+                            title: Text(ff[index].ip),
+                            onTap: (){
+                              setState((){
+                                _selectIndex = index;
+                                _selectedNetworkAddress = ff[index];
+                              });
+                            },
+                          );
+                        },
+                      ),
                     ),
                   ),
                   const Divider(color: Colors.transparent,),
@@ -109,6 +146,8 @@ class _HomePageState extends State<HomePage> {
                         if(!_form.validate()) return;
 
                         _form.save();
+
+                        print(_selectedNetworkAddress.ip);
 
                         WebSocket.connect('ws://${_selectedNetworkAddress.ip}:8000?name=${_removeEmptySpace()}').then((ws) {
                             print('Connect Success');
@@ -135,7 +174,7 @@ class _HomePageState extends State<HomePage> {
 
                           },
                           onError: (ex){
-                            print('On Error');
+                            print('On Error 1 $ex');
                             _showFailedDialog();
                           },
                         );
