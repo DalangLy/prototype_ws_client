@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> {
 
   final GlobalKey<FormState> _clientNameFormKey = GlobalKey<FormState>();
 
-  final port = 8000;
+  final port = 1100;
   late Stream<NetworkAddress> stream;
   final List<NetworkAddress> ff = [];
 
@@ -24,33 +24,55 @@ class _HomePageState extends State<HomePage> {
   initState(){
     super.initState();
 
-
     _scanNetwork();
 
   }
 
+  @override
+  void didChangeDependencies() {
+    // Provider.of<>(context)
+    super.didChangeDependencies();
+
+    print('did change dependency');
+  }
+
+  @override
+  void didUpdateWidget(HomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    print('hello owrld');
+  }
+
 
   void _scanNetwork(){
-    stream = NetworkAnalyzer.discover2(
-      '192.168.0', port,
-    );
+    ff.clear();
+    try{
+      stream = NetworkAnalyzer.discover2(
+        '192.168.0', port,
+      );
 
-    int found = 0;
-    stream.listen((NetworkAddress addr) {
-      if (addr.exists) {
-        found++;
-        ff.add(addr);
-        setState(() {});
-        print('Found device: ${addr.ip}:$port');
-      }
-    },onError: (ex){
-      print('on error');
-    },
-      onDone: (){
-        print('On Done');
+      int found = 0;
+      stream.listen((NetworkAddress addr) {
+        if (addr.exists) {
+          found++;
+          ff.add(addr);
+          if(ff.isNotEmpty){
+            _selectedNetworkAddress = ff[0];
+          }
+          setState(() {});
+          print('Found device: ${addr.ip}:$port');
+        }
+      },onError: (ex){
+        print('on error');
       },
-      cancelOnError: false,
-    ).onDone(() => print('Finish. Found $found device(s)'));
+        onDone: (){
+          print('On Done');
+        },
+        cancelOnError: false,
+      ).onDone(() => print('Finish. Found $found device(s)'));
+    }catch(e){
+      print('Error Dalang');
+    }
   }
 
 
@@ -98,10 +120,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Text('Servers List', style: Theme.of(context).textTheme.headline6,),
                       IconButton(onPressed: (){
-                        ff.clear();
-
                         _scanNetwork();
-
                       }, icon: const Icon(Icons.refresh)),
                     ],
                   ),
@@ -141,15 +160,16 @@ class _HomePageState extends State<HomePage> {
                     height: 58,
                     child: ElevatedButton(
                       onPressed: (){
-                        final FormState? _form = _clientNameFormKey.currentState;
-                        if(_form == null) return;
-                        if(!_form.validate()) return;
+                        if(ff.isEmpty) return;
+                        final FormState? form = _clientNameFormKey.currentState;
+                        if(form == null) return;
+                        if(!form.validate()) return;
 
-                        _form.save();
+                        form.save();
 
                         print(_selectedNetworkAddress.ip);
 
-                        WebSocket.connect('ws://${_selectedNetworkAddress.ip}:8000?name=${_removeEmptySpace()}').then((ws) {
+                        WebSocket.connect('ws://${_selectedNetworkAddress.ip}:$port?name=${_removeEmptySpace()}').then((ws) {
                             print('Connect Success');
                             var channel = IOWebSocketChannel(ws);
                             Navigator.of(context).push(MaterialPageRoute(builder: (context) => PrinterTestPage(channel: channel,),));
@@ -175,6 +195,7 @@ class _HomePageState extends State<HomePage> {
                           },
                           onError: (ex){
                             print('On Error 1 $ex');
+
                             _showFailedDialog();
                           },
                         );
@@ -200,15 +221,23 @@ class _HomePageState extends State<HomePage> {
       context: context,
       barrierDismissible: true, // user must tap button!
       builder: (BuildContext context) {
-        return const AlertDialog(
-          title: Text('Failed'),
-          content: SizedBox(
+        return AlertDialog(
+          title: const Text('Failed'),
+          content: const SizedBox(
             height: 60,
             width: 200,
             child: Center(
               child: Icon(Icons.cancel, color: Colors.red, size: 60,),
             ),
           ),
+          actions: [
+            TextButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
         );
       },
     );
