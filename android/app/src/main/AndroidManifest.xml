@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.prototype_ws_client">
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="prototype_ws_client"
         android:name="${applicationName}"
