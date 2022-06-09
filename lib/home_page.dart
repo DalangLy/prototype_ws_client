@@ -142,7 +142,12 @@ class _HomePageState extends State<HomePage> {
                             selectedColor: Colors.white,
                             selectedTileColor: Colors.blue,
                             selected: index == _selectIndex,
-                            title: Text(ff[index].ip),
+                            leading: const SizedBox(
+                              height: double.infinity,
+                              child: Icon(Icons.print),
+                            ),
+                            title: const Text('Printing Service'),
+                            subtitle: Text(ff[index].ip),
                             onTap: (){
                               setState((){
                                 _selectIndex = index;

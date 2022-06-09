@@ -21,7 +21,7 @@ class _PrinterTestPageState extends State<PrinterTestPage> {
         //channel.sink.add('received!');
         //channel.sink.close(status.goingAway);
         setState((){
-          _status = message;
+          _status += message+'\n';
         });
       },
       onError: (e){
