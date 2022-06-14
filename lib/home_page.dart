@@ -28,22 +28,6 @@ class _HomePageState extends State<HomePage> {
 
   }
 
-  @override
-  void didChangeDependencies() {
-    // Provider.of<>(context)
-    super.didChangeDependencies();
-
-    print('did change dependency');
-  }
-
-  @override
-  void didUpdateWidget(HomePage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    print('hello owrld');
-  }
-
-
   void _scanNetwork(){
     ff.clear();
     try{
