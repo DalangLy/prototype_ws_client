@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:prototype_ws_client/models/print_model.dart';
+import 'package:prototype_ws_client/models/print_template_model.dart';
 import 'package:web_socket_channel/io.dart';
 
 class PrinterTestPage extends StatefulWidget {
@@ -57,7 +57,7 @@ class _PrinterTestPageState extends State<PrinterTestPage> {
   String _message = '';
   String _printerName = '';
   String _status = '';
-  String _jsonString = '';
+  String _jsonString = 'hello';
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +114,7 @@ class _PrinterTestPageState extends State<PrinterTestPage> {
                               form.save();
 
                               widget.channel.sink.add(json.encode({
-                                'code': 'SendToServer',
+                                'requestType': 'SendToServer',
                                 'message': _message,
                               }));
 
@@ -137,7 +137,7 @@ class _PrinterTestPageState extends State<PrinterTestPage> {
                               form.save();
 
                               widget.channel.sink.add(json.encode({
-                                'code': 'SendToEveryone',
+                                'requestType': 'SendToEveryone',
                                 'message': _message,
                               }));
                             },
@@ -194,7 +194,7 @@ class _PrinterTestPageState extends State<PrinterTestPage> {
                           onPressed: (){
 
                             widget.channel.sink.add(json.encode({
-                              'code': 'RequestPrintersList'
+                              'requestType': 'RequestPrintersList'
                             }));
 
                           },
@@ -277,10 +277,10 @@ class _PrinterTestPageState extends State<PrinterTestPage> {
                                 form1.save();
 
 
-                                PrintModel jj = PrintModel.fromJson(_jsonString);
-
-                                widget.channel.sink.add(jj.toJson());
-                              },
+                                //PrintTemplateModel jj = PrintTemplateModel.fromJson('{ "requestType": "print", "printMeta": { "printerName": "Microsoft Print to PDF", "printMethod": "printAndCut", "printTemplate": { "printTemplateLayout": { "rows": [ { "row": { "rowBorderTop": 2, "rowBorderRight": 2, "rowBorderBottom": 2, "rowBorderLeft": 2, "rowBackground": "red", "columns": [ { "column": { "content": "Row 1 Col 1", "rowSpan": 2 } }, { "column": { "content": "Row 1 Col 2", "columnWidth": 200, "columnBorderTop": 2, "columnBorderRight": 2, "columnBorderBottom": 2, "columnBorderLeft": 2 } } ] } }, { "row": { "columns": [ { "column": { "content": "Row 2 Col 2" } } ] } } ] } } } }');
+                                //String jsonString = '{ "requestType": "print", "printMeta": { "printerName": "Microsoft Print to PDF", "printMethod": "printAndCut", "printTemplateLayout": { "paddingTop": 10 } } }';
+                                widget.channel.sink.add('{ "requestType": "print", "printMeta": { "printerName": "Microsoft Print to PDF", "printMethod": "printandcut", "printTemplateLayout": { "PrintTemplateLayout": { "PaddingTop": 0, "PaddingRight": 0, "PaddingBottom": 0, "PaddingLeft": 0, "RowGap": 5, "PaperWidth": 500, "PaperBackground": "transparent", "FontSize": 12, "FontFamily": "aril", "Foreground": "black", "Rows": [ { "Row": { "RowMarginTop": 0, "RowMarginRight": 0, "RowMarginBottom": 0, "RowMarginLeft": 0, "RowPaddingTop": 0, "RowPaddingRight": 0, "RowPaddingBottom": 0, "RowPaddingLeft": 0, "RowBorderTop": 0, "RowBorderRight": 0, "RowBorderBottom": 0, "RowBorderLeft": 0, "RowBackground": "blue", "RowHeight": 0, "ColumnVerticalAlign": "stretch", "ColumnHorizontalAlign": "stretch", "Columns": [ { "Column": { "Content": "FPTP", "ContentType": "text", "QrCodeLogo": "", "Bold": true, "Foreground": "black", "FontSize": 22, "FontFamily": "Aril", "ContentWidth": 0, "ContentHeight": 0, "ContentHorizontalAlign": "center", "ContentVerticalAlign": "center", "ColumnBackground": "gray", "ColumnHorizontalAlign": "stretch", "ColumnVerticalAlign": "stretch", "ColumnMarginTop": 0, "ColumnMarginRight": 0, "ColumnMarginBottom": 0, "ColumnMarginLeft": 0, "ColumnWidth": 0, "ColumnHeight": 0, "ColumnPaddingTop": 0, "ColumnPaddingRight": 0, "ColumnPaddingBottom": 0, "ColumnPaddingLeft": 0, "ColumnBorderTop": 0, "ColumnBorderRight": 0, "ColumnBorderBottom": 0, "ColumnBorderLeft": 0, "ColSpan": 0, "RowSpan": 0 } } ] } } ] } } } }');
+                                },
                               child: const Text('Print'),
                             ),
                           ),
