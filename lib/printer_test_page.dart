@@ -57,7 +57,7 @@ class _PrinterTestPageState extends State<PrinterTestPage> {
   String _message = '';
   String _printerName = '';
   String _status = '';
-  String _jsonString = 'hello';
+  String _jsonString = '{ "requestType": "print", "printMeta": { "printerName": "Microsoft Print to PDF", "printMethod": "printandcut", "printTemplateLayout": { "PrintTemplateLayout": { "FontSize": 10, "rowGap": 1, "Rows": [ { "Row": { "Columns": [ { "Column": { "Content": "Ordered", "Bold": true, "contentHorizontalAlign": "center" } } ] } }, { "Row": { "Columns": [ { "Column": { "Content": "Date: 04/21/2022 10:57 AM" } } ] } }, { "Row": { "Columns": [ { "Column": { "Content": "Order : 312405" } }, { "Column": { "Content": "Table : AAA-A02", "ContentHorizontalAlign": "right" } } ] } }, { "Row": { "Columns": [ { "Column": { "Content": "User : admin" } }, { "Column": { "Content": "Pax : 1", "ContentHorizontalAlign": "right" } } ] } }, { "Row": { "RowBorderTop": 1, "RowBorderBottom": 1, "Columns": [ { "Column": { "Content": "No", "ColumnWidth": 20 } }, { "Column": { "Content": "Item Name" } }, { "Column": { "Content": "Size", "ColumnWidth": 40 } }, { "Column": { "Content": "Qty", "ColumnWidth": 20 } } ] } }, { "Row": { "Columns": [ { "Column": { "Content": "1", "ColumnWidth": 20 } }, { "Column": { "Content": "កាហ្វេភ្នំពេញទឹកកក" } }, { "Column": { "Content": "តូច", "ColumnWidth": 40 } }, { "Column": { "Content": "1", "ColumnWidth": 20 } } ] } } ] } } } }';
 
   @override
   Widget build(BuildContext context) {
@@ -243,6 +243,11 @@ class _PrinterTestPageState extends State<PrinterTestPage> {
                             final FormState? form = _jsonFormKey.currentState;
                             if(form == null) return;
 
+                            print('hello');
+                            _jsonString = '';
+                            setState(() {
+
+                            });
                             form.reset();
 
                           },
@@ -276,7 +281,7 @@ class _PrinterTestPageState extends State<PrinterTestPage> {
                                 if(!form1.validate()) return;
                                 form1.save();
 
-
+                                //widget.channel.sink.add(_jsonString);
                                 //PrintTemplateModel jj = PrintTemplateModel.fromJson('{ "requestType": "print", "printMeta": { "printerName": "Microsoft Print to PDF", "printMethod": "printAndCut", "printTemplate": { "printTemplateLayout": { "rows": [ { "row": { "rowBorderTop": 2, "rowBorderRight": 2, "rowBorderBottom": 2, "rowBorderLeft": 2, "rowBackground": "red", "columns": [ { "column": { "content": "Row 1 Col 1", "rowSpan": 2 } }, { "column": { "content": "Row 1 Col 2", "columnWidth": 200, "columnBorderTop": 2, "columnBorderRight": 2, "columnBorderBottom": 2, "columnBorderLeft": 2 } } ] } }, { "row": { "columns": [ { "column": { "content": "Row 2 Col 2" } } ] } } ] } } } }');
                                 //String jsonString = '{ "requestType": "print", "printMeta": { "printerName": "Microsoft Print to PDF", "printMethod": "printAndCut", "printTemplateLayout": { "paddingTop": 10 } } }';
                                 widget.channel.sink.add(_jsonString);
